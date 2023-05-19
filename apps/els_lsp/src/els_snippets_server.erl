@@ -88,7 +88,8 @@ handle_info(_Request, State) ->
 -spec load_snippets() -> ok.
 load_snippets() ->
     init_snippets_table(),
-    [insert_snippet(S) || S <- builtin_snippets() ++ custom_snippets()],
+    % [insert_snippet(S) || S <- builtin_snippets() ++ custom_snippets()],
+    [insert_snippet(S) || S <- builtin_snippets()],
     ok.
 
 -spec init_snippets_table() -> ok.
@@ -126,11 +127,6 @@ snippets_from_escript() ->
     {ok, Snippets} = zip:foldl(Fun, [], {Name, Archive}),
     Snippets.
 
--spec custom_snippets() -> [snippet()].
-custom_snippets() ->
-    Dir = custom_snippets_dir(),
-    ensure_dir(Dir),
-    snippets_from_dir(Dir).
 
 -spec snippets_from_dir(file:filename_all()) -> [snippet()].
 snippets_from_dir(Dir) ->
@@ -140,10 +136,6 @@ snippets_from_dir(Dir) ->
 snippet_from_file(Dir, Filename) ->
     {ok, Content} = file:read_file(filename:join(Dir, Filename)),
     {Filename, Content}.
-
--spec ensure_dir(file:filename_all()) -> ok.
-ensure_dir(Dir) ->
-    ok = filelib:ensure_dir(filename:join(Dir, "dummy")).
 
 -spec build_snippet({binary(), binary()}) -> completion_item().
 build_snippet({Name, Snippet}) ->
